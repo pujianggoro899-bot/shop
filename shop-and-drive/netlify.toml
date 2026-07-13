@@ -1,0 +1,81 @@
+# ============================================================
+# SHOP & DRIVE TAMAN TEKNO — Netlify Configuration
+# ============================================================
+
+# Build settings
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+# Build environment
+[build.environment]
+  NODE_VERSION = "20"
+
+# Redirect & rewrite rules
+[[redirects]]
+  from = "/"
+  to = "/"
+  status = 200
+
+# SPA fallback — semua route dihandle oleh Next.js
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# ============================================================
+# HEADERS — Security & Performance
+# ============================================================
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(self)"
+
+# Cache static assets (1 year)
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/icons/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Cache images (30 days)
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000, stale-while-revalidate=86400"
+
+# PWA manifest & service worker — no cache
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+    Service-Worker-Allowed = "/"
+
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    Cache-Control = "no-cache"
+
+# ============================================================
+# FUNCTIONS (Serverless — untuk API)
+# ============================================================
+
+# Netlify Functions untuk API backend
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# Function timeout & memory
+[[functions]]
+  [functions.settings]
+    timeout = 30
+    memory = 1024
