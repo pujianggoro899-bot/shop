@@ -1,0 +1,55 @@
+# ============================================================
+# SHOP & DRIVE TAMAN TEKNO — Netlify Configuration
+# Mode: Static Export (output: "export")
+# ============================================================
+
+[build]
+  command = "npm run build"
+  publish = "out"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# ============================================================
+# REDIRECTS — Untuk static export dengan trailingSlash: true
+# Netlify akan serve halaman dari folder/index.html
+# ============================================================
+
+# Homepage
+[[redirects]]
+  from = "/"
+  to = "/index.html"
+  status = 200
+
+# Semua halaman lain: /produk → /produk/index.html
+[[redirects]]
+  from = "/*"
+  to = "/:splat/index.html"
+  status = 200
+
+# ============================================================
+# HEADERS — Security & Performance
+# ============================================================
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/icons/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
