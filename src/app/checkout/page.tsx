@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useCart } from "@/store/cart";
 import { formatCurrency } from "@/lib/utils";
 
 const paymentMethods = [
@@ -25,19 +26,20 @@ const shippingMethods = [
 ];
 
 export default function CheckoutPage() {
+  const { items, subtotal, discount, appliedVoucher, total, totalItems, clearCart } = useCart();
   const [paymentMethod, setPaymentMethod] = useState("va");
   const [shippingMethod, setShippingMethod] = useState("jne");
-  const [address, setAddress] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
   const selectedShipping = shippingMethods.find((s) => s.id === shippingMethod);
-  const subtotal = 1055000;
   const shippingCost = selectedShipping?.cost || 0;
-  const total = subtotal + shippingCost;
+  const finalTotal = subtotal + shippingCost - discount;
 
   const handleCheckout = (e: React.FormEvent) => {
     e.preventDefault();
+    if (items.length === 0) return;
     setSubmitted(true);
+    clearCart();
   };
 
   if (submitted) {
@@ -50,17 +52,24 @@ export default function CheckoutPage() {
           <h1 className="text-2xl font-bold text-gray-900">Pesanan Berhasil!</h1>
           <p className="mt-2 text-gray-600">Terima kasih, pesanan Anda telah diterima. Kami akan mengirimkan konfirmasi via WhatsApp.</p>
           <div className="mt-4 rounded-lg bg-gray-100 p-4 text-sm text-gray-700">
-            <p>No. Pesanan: <strong>#INV-20260713-001</strong></p>
+            <p>No. Pesanan: <strong>#INV-{new Date().toISOString().slice(0,10).replace(/-/g,"")}-{String(Math.floor(Math.random()*999)).padStart(3,"0")}</strong></p>
             <p>Silakan selesaikan pembayaran sebelum batas waktu.</p>
           </div>
           <div className="mt-6 flex justify-center gap-3">
-            <Link href="/akun/pesanan">
-              <Button variant="outline">Lihat Pesanan</Button>
-            </Link>
-            <Link href="/">
-              <Button>Kembali ke Beranda</Button>
-            </Link>
+            <Link href="/"><Button>Kembali ke Beranda</Button></Link>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className="flex min-h-[80vh] items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900">Keranjang Kosong</h1>
+          <p className="mt-2 text-gray-600">Tambahkan produk terlebih dahulu.</p>
+          <Link href="/produk"><Button className="mt-4">Belanja Sekarang</Button></Link>
         </div>
       </div>
     );
@@ -85,7 +94,6 @@ export default function CheckoutPage() {
           <div className="lg:col-span-3 space-y-6">
             <h1 className="text-2xl font-bold text-gray-900">Checkout</h1>
 
-            {/* Shipping Address */}
             <Card>
               <CardContent className="p-6">
                 <h2 className="text-lg font-bold text-gray-900">1. Alamat Pengiriman</h2>
@@ -104,55 +112,33 @@ export default function CheckoutPage() {
               </CardContent>
             </Card>
 
-            {/* Shipping Method */}
             <Card>
               <CardContent className="p-6">
                 <h2 className="text-lg font-bold text-gray-900">2. Metode Pengiriman</h2>
                 <div className="mt-4 space-y-3">
                   {shippingMethods.map((method) => (
-                    <label
-                      key={method.id}
-                      className={`flex cursor-pointer items-center justify-between rounded-lg border-2 p-4 transition-all ${
-                        shippingMethod === method.id ? "border-red-600 bg-red-50" : "border-gray-200 hover:border-gray-300"
-                      }`}
-                    >
+                    <label key={method.id} className={`flex cursor-pointer items-center justify-between rounded-lg border-2 p-4 transition-all ${shippingMethod === method.id ? "border-red-600 bg-red-50" : "border-gray-200 hover:border-gray-300"}`}>
                       <div className="flex items-center gap-3">
-                        <input
-                          type="radio"
-                          name="shipping"
-                          value={method.id}
-                          checked={shippingMethod === method.id}
-                          onChange={() => setShippingMethod(method.id)}
-                          className="h-4 w-4 accent-red-600"
-                        />
+                        <input type="radio" name="shipping" value={method.id} checked={shippingMethod === method.id} onChange={() => setShippingMethod(method.id)} className="h-4 w-4 accent-red-600" />
                         <div>
                           <p className="font-medium text-gray-900">{method.name}</p>
                           <p className="text-xs text-gray-500">Estimasi {method.est}</p>
                         </div>
                       </div>
-                      <span className="font-medium">
-                        {method.cost === 0 ? "GRATIS" : formatCurrency(method.cost)}
-                      </span>
+                      <span className="font-medium">{method.cost === 0 ? "GRATIS" : formatCurrency(method.cost)}</span>
                     </label>
                   ))}
                 </div>
               </CardContent>
             </Card>
 
-            {/* Payment Method */}
             <Card>
               <CardContent className="p-6">
                 <h2 className="text-lg font-bold text-gray-900">3. Metode Pembayaran</h2>
                 <div className="mt-4 grid grid-cols-2 gap-3">
                   {paymentMethods.map((method) => (
-                    <button
-                      key={method.id}
-                      type="button"
-                      onClick={() => setPaymentMethod(method.id)}
-                      className={`flex items-center gap-3 rounded-lg border-2 p-4 transition-all ${
-                        paymentMethod === method.id ? "border-red-600 bg-red-50" : "border-gray-200 hover:border-gray-300"
-                      }`}
-                    >
+                    <button key={method.id} type="button" onClick={() => setPaymentMethod(method.id)}
+                      className={`flex items-center gap-3 rounded-lg border-2 p-4 transition-all ${paymentMethod === method.id ? "border-red-600 bg-red-50" : "border-gray-200 hover:border-gray-300"}`}>
                       <div className="text-red-600">{method.icon}</div>
                       <div className="text-left">
                         <p className="text-sm font-medium text-gray-900">{method.name}</p>
@@ -165,34 +151,44 @@ export default function CheckoutPage() {
             </Card>
           </div>
 
-          {/* Order Summary */}
           <div className="lg:col-span-2">
             <Card className="sticky top-28">
               <CardContent className="p-6">
                 <h2 className="text-lg font-bold text-gray-900">Ringkasan Pesanan</h2>
+                <div className="space-y-2 divide-y">
+                  {items.map((item) => (
+                    <div key={item.id} className="flex justify-between text-sm py-2 first:pt-0">
+                      <span className="text-gray-700">{item.name} x{item.quantity}</span>
+                      <span className="font-medium">{formatCurrency(item.price * item.quantity)}</span>
+                    </div>
+                  ))}
+                </div>
                 <div className="mt-4 space-y-3">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Subtotal (3 item)</span>
+                    <span className="text-gray-600">Subtotal ({totalItems} item)</span>
                     <span className="font-medium">{formatCurrency(subtotal)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Ongkos Kirim</span>
                     <span className="font-medium">{shippingCost === 0 ? "GRATIS" : formatCurrency(shippingCost)}</span>
                   </div>
+                  {appliedVoucher && (
+                    <div className="flex justify-between text-sm text-green-600">
+                      <span>Diskon ({appliedVoucher})</span>
+                      <span>-{formatCurrency(discount)}</span>
+                    </div>
+                  )}
                   <div className="border-t pt-3">
                     <div className="flex justify-between">
                       <span className="font-semibold text-gray-900">Total</span>
-                      <span className="text-xl font-bold text-red-600">{formatCurrency(total)}</span>
+                      <span className="text-xl font-bold text-red-600">{formatCurrency(Math.max(0, finalTotal))}</span>
                     </div>
                   </div>
                 </div>
-
-                <Button type="submit" className="mt-6 w-full" size="lg">
-                  Bayar {formatCurrency(total)}
+                <Button type="submit" className="mt-6 w-full" size="lg" disabled={items.length === 0}>
+                  Bayar {formatCurrency(Math.max(0, finalTotal))}
                 </Button>
-                <p className="mt-2 text-center text-xs text-gray-400">
-                  Data Anda aman dan terenkripsi
-                </p>
+                <p className="mt-2 text-center text-xs text-gray-400">Data Anda aman dan terenkripsi</p>
               </CardContent>
             </Card>
           </div>

@@ -2,17 +2,22 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Star, ShoppingCart, Heart, Share2, Check, Minus, Plus, ChevronRight } from "lucide-react";
+import { Star, ShoppingCart, Heart, Share2, Check, Minus, Plus, ChevronRight, HeartOff } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { products, reviews } from "@/data/products";
+import { products, reviews as allReviews } from "@/data/products";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { useCart } from "@/store/cart";
+import { useWishlist } from "@/store/wishlist";
 
 export function ProductDetailClient({ slug }: { slug: string }) {
   const product = products.find((p) => p.slug === slug);
+  const { addItem } = useCart();
+  const { isInWishlist, toggleItem } = useWishlist();
   const [selectedVariant, setSelectedVariant] = useState(product?.variants[0]?.id || null);
   const [quantity, setQuantity] = useState(1);
+  const [addedToCart, setAddedToCart] = useState(false);
 
   if (!product) {
     return (
@@ -30,7 +35,42 @@ export function ProductDetailClient({ slug }: { slug: string }) {
 
   const selectedVariantData = product.variants.find((v) => v.id === selectedVariant);
   const currentPrice = product.price + (selectedVariantData?.additionalPrice || 0);
-  const productReviews = reviews.filter((r) => r.productId === product.id);
+  const productReviews = allReviews.filter((r) => r.productId === product.id);
+  const inWishlist = isInWishlist(product.id);
+
+  const handleAddToCart = () => {
+    addItem({
+      productId: product.id,
+      name: product.name,
+      variant: selectedVariantData?.name || "",
+      price: currentPrice,
+      quantity,
+      image: "",
+      slug: product.slug,
+      maxStock: selectedVariantData?.stock || 99,
+    });
+    setAddedToCart(true);
+    setTimeout(() => setAddedToCart(false), 2000);
+  };
+
+  const handleToggleWishlist = () => {
+    toggleItem({
+      productId: product.id,
+      name: product.name,
+      price: currentPrice,
+      image: "",
+      slug: product.slug,
+    });
+  };
+
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({ title: product.name, url: window.location.href });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      alert("Link produk disalin!");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -89,7 +129,7 @@ export function ProductDetailClient({ slug }: { slug: string }) {
                 <h3 className="mb-2 text-sm font-semibold text-gray-900">Pilih Varian</h3>
                 <div className="flex flex-wrap gap-2">
                   {product.variants.map((variant) => (
-                    <button key={variant.id} onClick={() => setSelectedVariant(variant.id)}
+                    <button key={variant.id} onClick={() => { setSelectedVariant(variant.id); setAddedToCart(false); }}
                       className={`rounded-lg border px-4 py-2 text-sm font-medium transition-all ${selectedVariant === variant.id ? "border-red-600 bg-red-50 text-red-600" : "border-gray-300 text-gray-700 hover:border-gray-400"} ${variant.stock === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
                       disabled={variant.stock === 0}>
                       {variant.name}
@@ -115,10 +155,27 @@ export function ProductDetailClient({ slug }: { slug: string }) {
                 <input type="number" value={quantity} onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))} className="w-14 border-x border-gray-300 px-2 py-2.5 text-center text-sm focus:outline-none" min={1} />
                 <button onClick={() => setQuantity(quantity + 1)} className="p-2.5 text-gray-600 hover:bg-gray-50"><Plus className="h-4 w-4" /></button>
               </div>
-              <Button size="lg" className="flex-1 sm:flex-initial"><ShoppingCart className="h-5 w-5" /> Tambah ke Keranjang</Button>
-              <Button variant="outline" size="lg"><Heart className="h-5 w-5" /></Button>
-              <Button variant="ghost" size="lg"><Share2 className="h-5 w-5" /></Button>
+              <Button size="lg" className="flex-1 sm:flex-initial" onClick={handleAddToCart}
+                disabled={addedToCart}>
+                {addedToCart ? (
+                  <><Check className="h-5 w-5" /> Ditambahkan ✓</>
+                ) : (
+                  <><ShoppingCart className="h-5 w-5" /> Tambah ke Keranjang</>
+                )}
+              </Button>
+              <Button variant="outline" size="lg" onClick={handleToggleWishlist}>
+                {inWishlist ? <HeartOff className="h-5 w-5" /> : <Heart className="h-5 w-5" />}
+              </Button>
+              <Button variant="ghost" size="lg" onClick={handleShare}>
+                <Share2 className="h-5 w-5" />
+              </Button>
             </div>
+
+            {addedToCart && (
+              <div className="mt-3 rounded-lg bg-green-50 p-3 text-sm text-green-700">
+                ✅ Produk ditambahkan ke keranjang! <Link href="/keranjang" className="font-medium underline">Lihat Keranjang</Link>
+              </div>
+            )}
           </div>
         </div>
 

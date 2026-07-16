@@ -10,38 +10,44 @@ export function LatestArticles() {
   const latest = articles.filter((a) => a.status === "published").slice(0, 3);
 
   return (
-    <section className="bg-gray-50 py-16">
-      <div className="mx-auto max-w-7xl px-4">
-        <div className="mb-8 flex items-end justify-between">
+    <section className="py-20 bg-carbon-800/30">
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="flex items-end justify-between mb-12">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900">Artikel & Tips</h2>
-            <p className="mt-2 text-gray-600">Informasi dan tips otomotif terkini</p>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="h-6 w-1 bg-red-600 rounded-full" />
+              <span className="text-xs font-bold tracking-[0.15em] uppercase text-red-500">Artikel & Tips</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight">
+              Panduan <span className="text-red-500">Otomotif</span>
+            </h2>
+            <p className="mt-2 text-gray-400">Tips, panduan, dan berita terbaru dunia otomotif</p>
           </div>
-          <Link href="/artikel" className="hidden text-sm font-medium text-red-600 hover:text-red-700 sm:block">
-            Lihat Semua →
+          <Link href="/artikel" className="hidden text-sm font-medium text-red-400 hover:text-red-300 transition-colors sm:flex items-center gap-1 group">
+            Lihat Semua
+            <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
+
         <div className="grid gap-6 md:grid-cols-3">
           {latest.map((article) => (
             <Link key={article.id} href={`/artikel/${article.slug}`}>
-              <Card hover className="flex h-full flex-col overflow-hidden">
-                <div className="aspect-video bg-gray-200">
-                  <div className="flex h-full items-center justify-center text-gray-400 text-4xl">
-                    {article.title.charAt(0)}
-                  </div>
+              <Card dark hover className="group h-full flex flex-col overflow-hidden">
+                <div className="aspect-[16/9] bg-gradient-to-br from-carbon-700 to-carbon-800 flex items-center justify-center overflow-hidden">
+                  <span className="text-5xl group-hover:scale-110 transition-transform duration-500">🔧</span>
                 </div>
-                <CardContent className="flex flex-1 flex-col">
-                  <Badge variant="info" className="mb-2 w-fit">{article.categoryName}</Badge>
-                  <h3 className="text-base font-semibold text-gray-900 line-clamp-2">{article.title}</h3>
-                  <p className="mt-2 flex-1 text-sm text-gray-600 line-clamp-2">{article.excerpt}</p>
-                  <div className="mt-4 flex items-center gap-3 text-xs text-gray-400">
-                    <span className="flex items-center gap-1">
+                <CardContent className="flex flex-1 flex-col p-5">
+                  <Badge variant="info" className="mb-2.5 w-fit text-[10px] tracking-wide">{article.categoryName}</Badge>
+                  <h3 className="text-base font-bold text-white line-clamp-2 group-hover:text-red-400 transition-colors">{article.title}</h3>
+                  <p className="mt-2 flex-1 text-sm text-gray-400 line-clamp-2 leading-relaxed">{article.excerpt}</p>
+                  <div className="mt-4 flex items-center gap-3 text-xs text-gray-500">
+                    <span className="flex items-center gap-1.5">
                       <Calendar className="h-3.5 w-3.5" />
                       {article.publishedAt ? formatDate(article.publishedAt) : ""}
                     </span>
-                    <span className="flex items-center gap-1">
+                    <span className="flex items-center gap-1.5">
                       <Clock className="h-3.5 w-3.5" />
-                      3 menit baca
+                      3 menit
                     </span>
                   </div>
                 </CardContent>
@@ -49,9 +55,12 @@ export function LatestArticles() {
             </Link>
           ))}
         </div>
-        <div className="mt-6 text-center sm:hidden">
+
+        <div className="mt-8 text-center sm:hidden">
           <Link href="/artikel">
-            <Button variant="outline">Lihat Semua Artikel</Button>
+            <Button variant="outline" className="w-full max-w-xs">
+              Lihat Semua Artikel <ArrowRight className="h-4 w-4" />
+            </Button>
           </Link>
         </div>
       </div>

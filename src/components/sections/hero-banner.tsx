@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Gauge, ArrowRight, Wrench, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { banners } from "@/data/banners";
 import { cn } from "@/lib/utils";
@@ -27,73 +27,114 @@ export function HeroBanner() {
   }, [current]);
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-red-900">
-      <div className="mx-auto max-w-7xl px-4">
-        <div className="relative min-h-[400px] md:min-h-[500px]">
+    <section className="relative overflow-hidden bg-carbon-900">
+      {/* SPEED LINES BACKGROUND */}
+      <div className="speed-lines absolute inset-0 opacity-30" />
+
+      {/* GRADIENT OVERLAY */}
+      <div className="absolute inset-0 bg-gradient-to-r from-carbon-900 via-carbon-900/95 to-carbon-900/80 z-10" />
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-carbon-900 to-transparent z-10" />
+
+      {/* DECORATIVE ELEMENTS */}
+      <div className="absolute top-20 right-20 w-96 h-96 rounded-full bg-red-600/5 blur-3xl" />
+      <div className="absolute bottom-10 left-10 w-64 h-64 rounded-full bg-red-600/5 blur-3xl" />
+
+      <div className="relative z-20 mx-auto max-w-7xl px-6">
+        <div className="relative min-h-[520px] md:min-h-[580px] flex items-center">
           {banners.map((banner, index) => (
             <div
               key={banner.id}
               className={cn(
-                "absolute inset-0 flex items-center transition-all duration-500",
+                "absolute inset-0 flex items-center transition-all duration-700 ease-out",
                 index === current
                   ? "translate-x-0 opacity-100"
                   : index < current
-                  ? "-translate-x-full opacity-0"
-                  : "translate-x-full opacity-0"
+                  ? "-translate-x-16 opacity-0"
+                  : "translate-x-16 opacity-0"
               )}
             >
-              <div className="max-w-xl py-16">
-                <div className="mb-2 inline-block rounded-full bg-red-500/20 px-3 py-1 text-xs font-medium text-red-300 backdrop-blur-sm">
-                  🔥 Promo Terbatas
+              <div className="max-w-2xl py-16 animate-slide-up">
+                {/* BADGE */}
+                <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-red-600/15 border border-red-600/30 px-4 py-1.5 text-xs font-semibold text-red-400 tracking-wider uppercase backdrop-blur-sm">
+                  <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse-glow" />
+                  Promo Terbatas — Periode Juli 2026
                 </div>
-                <h2 className="mb-4 text-3xl font-bold leading-tight text-white md:text-5xl">
-                  {banner.title}
+
+                {/* TITLE */}
+                <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.05] tracking-tight mb-5">
+                  {banner.title.split(" ").map((word, i) =>
+                    word === "Gratis" || word === "Diskon" || word === "Ongkir" ? (
+                      <span key={i} className="text-red-500 text-glow">{word} </span>
+                    ) : (
+                      <span key={i}>{word} </span>
+                    )
+                  )}
                 </h2>
-                <p className="mb-8 text-lg text-gray-300">{banner.subtitle}</p>
-                <div className="flex flex-wrap gap-3">
+
+                <p className="text-lg md:text-xl text-gray-400 mb-8 max-w-lg leading-relaxed">
+                  {banner.subtitle}
+                </p>
+
+                <div className="flex flex-wrap gap-4">
                   <Link href={banner.link}>
-                    <Button size="lg" className="bg-red-600 hover:bg-red-500">
+                    <Button className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white shadow-2xl shadow-red-600/30 px-7 py-3.5 text-sm font-bold rounded-xl transition-all hover:shadow-red-600/50 hover:scale-[1.02] active:scale-[0.98]">
                       Lihat Promo
+                      <ArrowRight className="h-4 w-4 ml-2" />
                     </Button>
                   </Link>
                   <Link href="/produk">
-                    <Button variant="outline" size="lg" className="border-white text-white hover:bg-white/10">
-                      Belanja Sekarang
+                    <Button className="bg-white/5 hover:bg-white/10 text-gray-200 border border-white/10 px-7 py-3.5 text-sm font-semibold rounded-xl backdrop-blur-sm transition-all hover:border-red-600/50">
+                      <Gauge className="h-4 w-4 mr-2" />
+                      Katalog Produk
                     </Button>
                   </Link>
+                </div>
+
+                {/* TRUST INDICATORS */}
+                <div className="mt-10 flex items-center gap-8 text-sm text-gray-500">
+                  <div className="flex items-center gap-2">
+                    <Shield className="h-4 w-4 text-green-500" />
+                    <span>Produk Original 100%</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Wrench className="h-4 w-4 text-blue-500" />
+                    <span>Garansi Servis</span>
+                  </div>
                 </div>
               </div>
             </div>
           ))}
-
-          {/* Navigation Arrows */}
-          <button
-            onClick={prev}
-            className="absolute left-0 top-1/2 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white backdrop-blur-sm transition-colors hover:bg-black/50"
-          >
-            <ChevronLeft className="h-6 w-6" />
-          </button>
-          <button
-            onClick={next}
-            className="absolute right-0 top-1/2 -translate-y-1/2 rounded-full bg-black/30 p-2 text-white backdrop-blur-sm transition-colors hover:bg-black/50"
-          >
-            <ChevronRight className="h-6 w-6" />
-          </button>
-
-          {/* Dots */}
-          <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 gap-2">
-            {banners.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => goTo(index)}
-                className={cn(
-                  "h-2 rounded-full transition-all",
-                  index === current ? "w-8 bg-red-500" : "w-2 bg-white/50 hover:bg-white/80"
-                )}
-              />
-            ))}
-          </div>
         </div>
+      </div>
+
+      {/* NAVIGATION ARROWS */}
+      <button
+        onClick={prev}
+        className="absolute left-4 top-1/2 z-30 -translate-y-1/2 rounded-full bg-white/5 backdrop-blur-md border border-white/10 p-3 text-white/60 hover:text-white hover:bg-red-600/30 hover:border-red-600/50 transition-all hidden md:block"
+      >
+        <ChevronLeft className="h-5 w-5" />
+      </button>
+      <button
+        onClick={next}
+        className="absolute right-4 top-1/2 z-30 -translate-y-1/2 rounded-full bg-white/5 backdrop-blur-md border border-white/10 p-3 text-white/60 hover:text-white hover:bg-red-600/30 hover:border-red-600/50 transition-all hidden md:block"
+      >
+        <ChevronRight className="h-5 w-5" />
+      </button>
+
+      {/* DOTS */}
+      <div className="absolute bottom-8 left-1/2 z-30 flex -translate-x-1/2 gap-3">
+        {banners.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => goTo(index)}
+            className={cn(
+              "rounded-full transition-all duration-300",
+              index === current
+                ? "h-2.5 w-10 bg-gradient-to-r from-red-600 to-red-500 shadow-lg shadow-red-600/30"
+                : "h-2.5 w-2.5 bg-white/20 hover:bg-white/40"
+            )}
+          />
+        ))}
       </div>
     </section>
   );

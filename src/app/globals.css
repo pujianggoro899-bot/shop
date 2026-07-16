@@ -1,40 +1,167 @@
 @import "tailwindcss";
 
-@layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
-  }
+/* ============================================================
+   SHOP & DRIVE — AUTOMOTIVE DESIGN SYSTEM v2.0
+   Tema: Dark Premium · Carbon Fiber · Racing Heritage
+   Palet: #dc2626 (Racing Red), #111111 (Carbon Black), #f8fafc
+   ============================================================ */
+
+@theme {
+  --color-racing-red: #dc2626;
+  --color-racing-red-dark: #b91c1c;
+  --color-racing-red-light: #fca5a5;
+  --color-carbon-900: #0a0a0a;
+  --color-carbon-800: #111111;
+  --color-carbon-700: #1a1a1a;
+  --color-carbon-600: #2a2a2a;
+  --color-carbon-500: #3a3a3a;
+  --color-carbon-400: #6b7280;
+  --color-steel: #9ca3af;
+  --color-titanium: #e5e7eb;
+  --font-display: "Inter", "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
 }
 
+/* ============================================================
+   BASE
+   ============================================================ */
 body {
-  font-family: system-ui, -apple-system, 'Inter', sans-serif;
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
-/* Smooth scroll */
-html {
   scroll-behavior: smooth;
+}
+
+/* ============================================================
+   AUTOMOTIVE SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #1a1a1a; }
+::-webkit-scrollbar-thumb { background: #dc2626; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #b91c1c; }
+
+/* ============================================================
+   CHECKERED FLAG DIVIDER
+   ============================================================ */
+.checkered-divider {
+  height: 8px;
+  background-image:
+    linear-gradient(45deg, #222 25%, transparent 25%),
+    linear-gradient(-45deg, #222 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #222 75%),
+    linear-gradient(-45deg, transparent 75%, #222 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+}
+
+/* ============================================================
+   SPEED LINES (background animation)
+   ============================================================ */
+.speed-lines {
+  position: relative;
+  overflow: hidden;
+}
+.speed-lines::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 40px,
+    rgba(220, 38, 38, 0.03) 40px,
+    rgba(220, 38, 38, 0.03) 41px
+  );
+  pointer-events: none;
+}
+
+/* ============================================================
+   CARBON FIBER TEXTURE
+   ============================================================ */
+.carbon-fiber {
+  background-color: #1a1a1a;
+  background-image:
+    linear-gradient(45deg, #222 25%, transparent 25%),
+    linear-gradient(-45deg, #222 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #222 75%),
+    linear-gradient(-45deg, transparent 75%, #222 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+}
+
+/* ============================================================
+   GLOW EFFECTS
+   ============================================================ */
+.glow-red {
+  box-shadow: 0 0 20px rgba(220, 38, 38, 0.3), 0 0 60px rgba(220, 38, 38, 0.1);
+}
+.glow-red-sm {
+  box-shadow: 0 0 10px rgba(220, 38, 38, 0.3);
+}
+.text-glow {
+  text-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+}
+
+/* ============================================================
+   TACHYMETER / SPEEDOMETER INSPIRED UI
+   ============================================================ */
+.tach-border {
+  border: 2px solid;
+  border-image: linear-gradient(135deg, #dc2626, #ef4444, #dc2626) 1;
+}
+
+/* ============================================================
+   HEXAGON BADGE (automotive inspired)
+   ============================================================ */
+.hex-badge {
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+@keyframes slide-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes rpm {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+.animate-slide-up { animation: slide-up 0.5s ease-out forwards; }
+.animate-rpm { animation: rpm 3s linear infinite; }
+
+/* ============================================================
+   TYPOGRAPHY ACCENTS
+   ============================================================ */
+.racing-number {
+  font-family: "Arial Black", "Impact", sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* ============================================================
+   PROSE OVERRIDES FOR ARTICLE CONTENT
+   ============================================================ */
+.prose-automotive h2 {
+  @apply text-2xl font-bold mt-8 mb-4;
+}
+.prose-automotive h3 {
+  @apply text-xl font-bold mt-6 mb-3;
+}
+.prose-automotive p {
+  @apply leading-relaxed mb-4;
+}
+.prose-automotive ul, .prose-automotive ol {
+  @apply space-y-2 mb-4 pl-5;
+}
+.prose-automotive li {
+  @apply leading-relaxed;
+}
+.prose-automotive strong {
+  @apply font-bold;
 }

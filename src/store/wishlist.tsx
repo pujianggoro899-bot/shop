@@ -1,7 +1,6 @@
-// Wishlist store menggunakan React Context
 "use client";
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
 
 interface WishlistItem {
   productId: string;
@@ -21,10 +20,33 @@ interface WishlistContextType {
   count: number;
 }
 
+const STORAGE_KEY = "shopanddrive_wishlist";
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
+
+function loadWishlist(): WishlistItem[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+}
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<WishlistItem[]>([]);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setItems(loadWishlist());
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (hydrated) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    }
+  }, [items, hydrated]);
 
   const addItem = useCallback((item: WishlistItem) => {
     setItems((prev) => {

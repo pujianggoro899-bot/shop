@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Mail, Check, Send } from "lucide-react";
+import { Mail, Check, Send, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
 
 export function NewsletterSection() {
   const [email, setEmail] = useState("");
@@ -15,72 +13,58 @@ export function NewsletterSection() {
     e.preventDefault();
     if (!email) return;
     setLoading(true);
-    // Simulate API call
     await new Promise((r) => setTimeout(r, 1000));
     setSubscribed(true);
     setLoading(false);
   };
 
   return (
-    <section className="py-16">
-      <div className="mx-auto max-w-7xl px-4">
-        <Card className="overflow-hidden border-0 bg-gradient-to-r from-gray-900 to-gray-800">
-          <CardContent className="p-8 md:p-12">
-            <div className="grid items-center gap-8 md:grid-cols-2">
-              <div className="text-white">
-                <Mail className="mb-4 h-10 w-10 text-red-400" />
-                <h2 className="text-2xl font-bold md:text-3xl">Dapatkan Info & Promo Terbaru</h2>
-                <p className="mt-3 text-gray-300">
-                  Berlangganan newsletter kami dan dapatkan info promo, tips otomotif, dan penawaran spesial langsung di email Anda.
-                </p>
-                <div className="mt-2 flex items-center gap-4 text-sm text-gray-400">
-                  <span className="flex items-center gap-1">✓ Tips mingguan</span>
-                  <span className="flex items-center gap-1">✓ Promo eksklusif</span>
-                  <span className="flex items-center gap-1">✓ Gratis</span>
-                </div>
-              </div>
-              <div>
-                {subscribed ? (
-                  <div className="flex flex-col items-center rounded-xl bg-green-500/10 p-6 text-center">
-                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-green-500">
-                      <Check className="h-6 w-6 text-white" />
-                    </div>
-                    <p className="text-lg font-semibold text-white">Berhasil Berlangganan!</p>
-                    <p className="mt-1 text-sm text-gray-300">
-                      Terima kasih! Kami akan mengirimkan update terbaru ke <strong>{email}</strong>
-                    </p>
-                  </div>
-                ) : (
-                  <form onSubmit={handleSubscribe} className="space-y-3">
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
-                      <input
-                        type="email"
-                        placeholder="Masukkan email Anda"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full rounded-lg border border-gray-600 bg-gray-800 py-3 pl-10 pr-4 text-sm text-white placeholder-gray-400 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
-                        required
-                      />
-                    </div>
-                    <Button type="submit" className="w-full" disabled={loading}>
-                      {loading ? (
-                        "Mendaftarkan..."
-                      ) : (
-                        <>
-                          <Send className="h-4 w-4" /> Berlangganan
-                        </>
-                      )}
-                    </Button>
-                    <p className="text-xs text-gray-500">
-                      Dengan mendaftar, Anda menyetujui Kebijakan Privasi kami. Kami tidak akan mengirim spam.
-                    </p>
-                  </form>
-                )}
+    <section className="py-20 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-r from-red-900/20 via-carbon-900 to-red-900/10" />
+      <div className="absolute top-0 left-1/2 w-96 h-96 rounded-full bg-red-600/10 blur-3xl -translate-x-1/2" />
+
+      <div className="relative z-10 mx-auto max-w-7xl px-6">
+        <div className="max-w-2xl mx-auto text-center">
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-red-600/20 to-red-600/5 border border-red-600/20">
+            <Mail className="h-7 w-7 text-red-400" />
+          </div>
+          <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight mb-3">
+            Dapatkan Info & <span className="text-red-500">Promo</span> Terbaru
+          </h2>
+          <p className="text-gray-400 mb-8 max-w-md mx-auto">
+            Tips otomotif mingguan, promo eksklusif, dan penawaran spesial langsung ke email Anda.
+          </p>
+
+          {subscribed ? (
+            <div className="inline-flex items-center gap-3 rounded-2xl bg-green-500/10 border border-green-500/20 px-8 py-5">
+              <Check className="h-6 w-6 text-green-400" />
+              <div className="text-left">
+                <p className="font-bold text-white">Berhasil Berlangganan! 🎉</p>
+                <p className="text-sm text-gray-400">Kami akan kirim update ke <strong className="text-green-400">{email}</strong></p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          ) : (
+            <form onSubmit={handleSubscribe} className="max-w-md mx-auto">
+              <div className="flex gap-3">
+                <div className="relative flex-1">
+                  <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                  <input
+                    type="email"
+                    placeholder="Masukkan email Anda"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full rounded-xl bg-carbon-800 border border-carbon-500 py-3.5 pl-11 pr-4 text-sm text-white placeholder-gray-500 focus:border-red-600 focus:outline-none focus:ring-1 focus:ring-red-600/50 transition-all"
+                    required
+                  />
+                </div>
+                <Button type="submit" disabled={loading} className="px-6 py-3.5">
+                  {loading ? "..." : <><Send className="h-4 w-4" /> Daftar</>}
+                </Button>
+              </div>
+              <p className="mt-3 text-xs text-gray-600">Gratis. Tidak ada spam. Berhenti kapan saja.</p>
+            </form>
+          )}
+        </div>
       </div>
     </section>
   );
